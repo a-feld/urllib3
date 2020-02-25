@@ -295,6 +295,9 @@ class PoolManager(RequestMethods):
         removed from the merged dictionary.
         """
         base_pool_kwargs = self.connection_pool_kw.copy()
+        if self.headers:
+            base_pool_kwargs["headers"] = self.headers.copy()
+
         if override:
             for key, value in override.items():
                 if value is None:
@@ -320,9 +323,6 @@ class PoolManager(RequestMethods):
 
         kw["assert_same_host"] = False
         kw["redirect"] = False
-
-        if "headers" not in kw:
-            kw["headers"] = self.headers.copy()
 
         if self.proxy is not None and u.scheme == "http":
             response = conn.urlopen(method, url, **kw)
