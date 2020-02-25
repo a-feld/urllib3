@@ -302,6 +302,16 @@ class TestPoolManager(HTTPDummyServerTestCase):
             assert returned_headers.get("Foo") is None
             assert returned_headers.get("Baz") == "quux"
 
+            conn = http.connection_from_url(self.base_url)
+            r = conn.request("GET", "/headers")
+            returned_headers = json.loads(r.data.decode())
+            assert returned_headers.get("Foo") == "bar"
+
+            conn = http.connection_from_host(self.host, self.port)
+            r = conn.request("GET", "/headers")
+            returned_headers = json.loads(r.data.decode())
+            assert returned_headers.get("Foo") == "bar"
+
     def test_http_with_ssl_keywords(self):
         with PoolManager(ca_certs="REQUIRED") as http:
             r = http.request("GET", "http://%s:%s/" % (self.host, self.port))
